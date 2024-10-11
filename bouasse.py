@@ -1,19 +1,30 @@
-''' Programme développé pour réaliser la construction de Bouasse pour
-    déterminer la valeur de la distance focale d'une lentille sphérique mince
-
-    Leroy-Bury (2023)
-
-    # les données à traiter OF et OF' sont disponibles dans un fichier au
-    format csv et la distance focale est mesurée sur le graphique'''
 from matplotlib.pyplot import *
-from mpl_toolkits.axes_grid1 import host_subplot
-import pandas as pd
-import numpy as np
-from Lecture_csv import LectureCSV
-import sys
-##
-nom_fichier=input("Quel est le nom du fichier de pointage (sans l'extension .csv)? : ")+".csv"
-objet,image=LectureCSV(nom_fichier)
+import csv
+def LectureCSV():
+    file_path = input("Quel est le nom du fichier de pointage (sans l'extension .csv)? : ")+".csv"
+    donnée_csv = {}
+    with open(file_path, newline='', encoding='ISO-8859-1') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=';')
+        rows = list(csvreader)
+        header_index = 0
+        for i, row in enumerate(rows):
+            try:
+                [float(value.replace(',', '.')) for value in row]
+            except ValueError:
+                header_index = i
+                break
+        headers = rows[header_index]
+        data_columns = list(zip(*rows[header_index + 2:]))
+        for header, column in zip(headers, data_columns):
+          donnée_csv[header] = [float(value.replace(',', '.')) for value in column] # Convertir les valeurs dans chaque colonne en float (remplacer les virgules par des points)
+    return donnée_csv
+
+donnee = LectureCSV()
+clé = donnee.keys()
+print('quelle est le nom de la variable des abcissses dans le fichier CSV (parmis''', clé, ' ) ? ')
+objet = donnee[input()]
+print('quelle est le nom de la variable des ordonnées dans le fichier CSV (parmis''', clé, ' ) ? ')
+image = donnee[input()]
 fig, ax = subplots(num="construction de Bouasse",nrows=1, ncols=1,figsize=(12,6))
 grid(visible=True, which='major', color='b', linestyle='-')
 grid(visible=True, which='minor', color='g', linestyle='--')
@@ -24,7 +35,4 @@ xlabel(r'$\overline{OA}$ en m')
 ylabel(r"$\overline{OA'}$ en m")
 for i in range(0,len(objet),1):
     axline((objet[i], 0), (0, image[i]),linewidth=1, color='r')
-savefig("bouasse.png")
 show()
-if sys.platform.startswith('darwin'):
-    sys.exit()
