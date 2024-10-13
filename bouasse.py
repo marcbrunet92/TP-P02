@@ -16,7 +16,7 @@ def LectureCSV():
         headers = rows[header_index]
         data_columns = list(zip(*rows[header_index + 2:]))
         for header, column in zip(headers, data_columns):
-          donnée_csv[header] = [float(value.replace(',', '.')) for value in column] # Convertir les valeurs dans chaque colonne en float (remplacer les virgules par des points)
+          donnée_csv[header] = [float(value.replace(',', '.')) for value in column]
     return donnée_csv
 
 donnee = LectureCSV()
